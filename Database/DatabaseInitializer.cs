@@ -11,11 +11,14 @@ namespace Pinewood.Database
                 connection.Open();
 
                 var createTableCommand = @"
-                    CREATE TABLE IF NOT EXISTS Products (
+                    CREATE TABLE IF NOT EXISTS Customers (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         Name TEXT NOT NULL,
-                        Email TEXT NOT NULL
-                        Phone TEXT NOT NULL
+                        Email TEXT NOT NULL,
+                        Phone TEXT NOT NULL,
+                        DateAdded datetime NOT NULL,
+                        DateOfBirth datetime NOT NULL
+                        LastUpdated datetime NULL
                     );";
 
                 using (SqliteCommand command = new SqliteCommand(createTableCommand, connection))
@@ -23,13 +26,25 @@ namespace Pinewood.Database
                     command.ExecuteNonQuery();
                 }
 
-                var insertDataCommand = @"
-                    INSERT OR IGNORE INTO Customers (Name, Email, Phone) VALUES ('John Doe', jd@email.com, 123456789);";
+                var checkTableCommand = "SELECT COUNT(*) FROM Customers";
+                long rowCount = 0;
 
-                using (var command = new SqliteCommand(insertDataCommand, connection))
+                using (var command = new SqliteCommand(checkTableCommand, connection))
                 {
-                    command.ExecuteNonQuery();
+                    rowCount = (long)command.ExecuteScalar();
                 }
+
+                if (rowCount <= 0)
+                {
+                    var insertDataCommand = @"
+                    INSERT OR IGNORE INTO Customers (Name, Email, Phone, DateAdded, DateOfBirth) VALUES ('John Doe', 'jd@email.com', '123456789', DateTime('now'), DateTime('now'));";
+
+                    using (var command = new SqliteCommand(insertDataCommand, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+                
             }
         }
     }

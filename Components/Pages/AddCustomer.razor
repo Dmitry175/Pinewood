@@ -1,0 +1,57 @@
+﻿@page "/add-customer"
+@using Pinewood.Entities
+@using Pinewood.Interfaces
+@inject ICustomerRepository customerRepository
+@inject NavigationManager Navigation
+
+<PageTitle>Add Customer</PageTitle>
+
+<h3>Add Customer</h3>
+
+<EditForm FormName="newCustomer" Model="@NewCustomer" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="Name" class="form-label">Name</label>
+        <InputText id="Name" class="form-control" @bind-Value="NewCustomer.Name" />
+        <ValidationMessage For="@(() => NewCustomer.Name)" />
+    </div>
+    <div class="mb-3">
+        <label for="Email" class="form-label">Email</label>
+        <InputText id="Email" class="form-control" @bind-Value="NewCustomer.Email" />
+        <ValidationMessage For="@(() => NewCustomer.Email)" />
+    </div>
+    <div class="mb-3">
+        <label for="Phone" class="form-label">Phone</label>
+        <InputText id="Phone" class="form-control" @bind-Value="NewCustomer.Phone" />
+        <ValidationMessage For="@(() => NewCustomer.Phone)" />
+    </div>
+    <div class="mb-3">
+        <label for="DOB" class="form-label">Date of Birth</label>
+        <InputDate id="DOB" class="form-control" @bind-Value="NewCustomer.DateOfBirth" />
+        <ValidationMessage For="@(() => NewCustomer.DateOfBirth)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Customer</button>
+</EditForm>
+
+
+@code {
+
+    // [SupplyParameterFromForm]
+    // public string Name { get; set; }
+    [SupplyParameterFromForm]
+    private Customer NewCustomer { get; set; } = new();
+
+
+    private async Task HandleValidSubmit()
+    {
+        // var sssa = Name;
+        var s = NewCustomer;
+        // newCustomer.Name = Name;
+
+        await customerRepository.AddCustomer(NewCustomer);
+        Navigation.NavigateTo("/");
+    }
+}

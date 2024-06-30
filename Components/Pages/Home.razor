@@ -1,7 +1,51 @@
 ﻿@page "/"
+@using Pinewood.Entities
+@using Pinewood.Interfaces
+
+@inject ICustomerRepository custRep; 
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Customers == null)
+        {
+            <tr>
+                <td colspan="4">Loading...</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var customer in Customers)
+            {
+                <tr>
+                    <td>@customer.Id</td>
+                    <td>@customer.Name</td>
+                    <td>@customer.Email</td>
+                    <td>@customer.Phone</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Customer> Customers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Customers = await custRep.GetCustomers();
+
+    }
+}

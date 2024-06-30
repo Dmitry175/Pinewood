@@ -1,7 +1,9 @@
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
 using Pinewood.Components;
+using Pinewood.DataAccess;
 using Pinewood.Database;
+using Pinewood.Interfaces;
 
 namespace Pinewood
 {
@@ -17,6 +19,9 @@ namespace Pinewood
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             DatabaseInitializer.Initialize(connectionString);
+
+            builder.Services.AddTransient<IADOProvider,ADOProvider>();
+            builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
 
             var app = builder.Build();
 

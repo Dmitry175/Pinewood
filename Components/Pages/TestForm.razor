@@ -1,0 +1,29 @@
+﻿@page "/TestForm"
+@using Pinewood.Entities
+@using Pinewood.Interfaces
+@inject ICustomerRepository customerRepository
+@inject NavigationManager Navigation
+
+<h3>TestForm</h3>
+
+
+
+<EditForm FormName="Hello" Model="this" OnSubmit="Submit">
+    <InputText @bind-Value="Name" />
+    <button type="submit">Submit</button>
+</EditForm>
+
+@if (submitted)
+{
+    <p>Hello @Name from the library's form!</p>
+}
+
+@code {
+    bool submitted = false;
+
+    [SupplyParameterFromForm]
+    public string? Name { get; set; }
+
+    private void Submit() => submitted = true;
+}
+}
