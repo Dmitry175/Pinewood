@@ -17,7 +17,7 @@ namespace Pinewood.Database
                         Email TEXT NOT NULL,
                         Phone TEXT NOT NULL,
                         DateAdded datetime NOT NULL,
-                        DateOfBirth datetime NOT NULL
+                        DateOfBirth datetime NOT NULL,
                         LastUpdated datetime NULL
                     );";
 

@@ -1,0 +1,67 @@
+﻿@page "/edit-customer/{CustomerId:int}"
+@using Pinewood.Entities
+@using Pinewood.Interfaces
+@inject ICustomerRepository customerRepository
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Customer</PageTitle>
+
+<h3>Edit Customer</h3>
+
+@if (errorMessage != "")
+{
+    <h3>@errorMessage</h3>
+}
+
+<EditForm Model="@customer" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <InputText id="name" class="form-control" @bind-Value="customer.Name"/>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="customer.Email" />
+    </div>
+    <div class="mb-3">
+        <label for="phone" class="form-label">Phone</label>
+        <InputText id="phone" class="form-control" @bind-Value="customer.Phone" />
+    </div>
+    <div class="mb-3">
+        <label for="dob" class="form-label">Date of Birth</label>
+        <InputDate id="dob" class="form-control" @bind-Value="customer.DateOfBirth" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Customer</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int CustomerId { get; set; }
+
+    [SupplyParameterFromForm]
+    private Customer customer { get; set; } = new();
+
+    private string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        customer = await customerRepository.GetCustomerById(CustomerId);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await customerRepository.UpdateCustomer(customer);
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+        
+    }
+}

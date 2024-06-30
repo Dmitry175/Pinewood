@@ -2,50 +2,92 @@
 @using Pinewood.Entities
 @using Pinewood.Interfaces
 
-@inject ICustomerRepository custRep; 
+@inject ICustomerRepository custRep;
+@inject NavigationManager Navigation
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+@if (errorMessage != "")
+{
+	<h3>@errorMessage</h3>
+}
 
 Welcome to your new app.
 <table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Customers == null)
-        {
-            <tr>
-                <td colspan="4">Loading...</td>
-            </tr>
-        }
-        else
-        {
-            @foreach (var customer in Customers)
-            {
-                <tr>
-                    <td>@customer.Id</td>
-                    <td>@customer.Name</td>
-                    <td>@customer.Email</td>
-                    <td>@customer.Phone</td>
-                </tr>
-            }
-        }
-    </tbody>
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Phone</th>
+			<th>Date of Birth</th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@if (Customers == null)
+		{
+			<tr>
+				<td colspan="4">Loading...</td>
+			</tr>
+		}
+		else
+		{
+			@foreach (var customer in Customers)
+			{
+				<tr>
+					<td>@customer.Id</td>
+					<td>@customer.Name</td>
+					<td>@customer.Email</td>
+					<td>@customer.Phone</td>
+					<td>@customer.DateOfBirth</td>
+					<td>
+						<button class="btn btn-primary" @onclick="() => NavigateToEditPage(customer.Id)">Edit</button>
+					</td>
+					<td>
+						<button class="btn btn-primary" @onclick="() => DeleteCustomer(customer.Id)">Delete</button>
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
 </table>
 
 @code {
-    private List<Customer> Customers;
+	private List<Customer> Customers;
 
-    protected override async Task OnInitializedAsync()
-    {
-        Customers = await custRep.GetCustomers();
+	private string errorMessage = "";
 
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			Customers = await custRep.GetCustomers();
+		}
+		catch (Exception ex)
+		{
+			errorMessage = ex.Message;
+		}
+
+	}
+
+	private void NavigateToEditPage(int customerId)
+	{
+		Navigation.NavigateTo($"/edit-customer/{customerId}");
+	}
+
+	private async Task DeleteCustomer(int customerId)
+	{
+		try
+		{
+			await custRep.DeleteCustomer(customerId);
+			Customers = await custRep.GetCustomers();
+		}
+		catch (Exception ex)
+		{
+			errorMessage = ex.Message;
+		}
+	}
+
 }

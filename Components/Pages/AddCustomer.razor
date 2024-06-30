@@ -8,6 +8,11 @@
 
 <h3>Add Customer</h3>
 
+@if (errorMessage != "")
+{
+    <h3>@errorMessage</h3>
+}
+
 <EditForm FormName="newCustomer" Model="@NewCustomer" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -39,19 +44,22 @@
 
 @code {
 
-    // [SupplyParameterFromForm]
-    // public string Name { get; set; }
     [SupplyParameterFromForm]
     private Customer NewCustomer { get; set; } = new();
 
+    private string errorMessage = "";
 
     private async Task HandleValidSubmit()
     {
-        // var sssa = Name;
-        var s = NewCustomer;
-        // newCustomer.Name = Name;
-
-        await customerRepository.AddCustomer(NewCustomer);
-        Navigation.NavigateTo("/");
+        try
+        {
+            await customerRepository.AddCustomer(NewCustomer);
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        
     }
 }
